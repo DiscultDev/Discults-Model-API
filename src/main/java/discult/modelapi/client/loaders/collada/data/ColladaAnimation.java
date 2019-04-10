@@ -1,4 +1,4 @@
-package discult.modelapi.client.loaders.collada;
+package discult.modelapi.client.loaders.collada.data;
 
 public class ColladaAnimation
 {
