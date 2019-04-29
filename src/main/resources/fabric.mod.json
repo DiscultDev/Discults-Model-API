@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "poly",
+  "version": "${version}",
+
+  "name": "Poly Model API",
+  "description": "This is a model api to allow fabric mod developers to use model formats to do higher detailed block models.",
+  "authors": [
+    "Discult/Jordan Ellison"
+  ],
+  "contact": {
+    "homepage": "aint got non fam",
+    "sources": "https://github.com/DiscultDev/Discults-Model-API"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/poly/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "discult.poly.Poly"
+    ]
+  },
+  "mixins": [
+    "poly.mixins.json"
+  ],
+
+  "requires": {
+    "fabricloader": ">=0.4.0",
+    "fabric": "*"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
