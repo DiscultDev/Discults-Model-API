@@ -1,4 +1,4 @@
-package discult.modelapi.client.loaders.smd;
+package discult.modelapi.client.loaders.oldSMD;
 
 import discult.modelapi.common.util.SMDPatterns;
 import discult.modelapi.common.util.helpers.CommonHelper;

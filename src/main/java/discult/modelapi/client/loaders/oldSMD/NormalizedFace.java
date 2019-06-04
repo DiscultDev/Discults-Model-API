@@ -1,4 +1,4 @@
-package discult.modelapi.client.loaders.smd;
+package discult.modelapi.client.loaders.oldSMD;
 
 import discult.modelapi.client.loaders.general.Vertex;
 import java.nio.FloatBuffer;

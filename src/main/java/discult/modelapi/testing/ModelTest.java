@@ -1,6 +1,6 @@
 package discult.modelapi.testing;
 
-import discult.modelapi.client.loaders.smd.ValveStudioModel;
+import discult.modelapi.client.loaders.oldSMD.ValveStudioModel;
 import discult.modelapi.client.models.ModelCustomWrapper;
 import discult.modelapi.client.models.ModelSMDBase;
 import discult.modelapi.client.models.SMDModelRenderer;

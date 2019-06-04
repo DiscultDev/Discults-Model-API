@@ -1,4 +1,4 @@
-package discult.modelapi.client.loaders.smd;
+package discult.modelapi.client.loaders.oldSMD;
 
 import discult.modelapi.common.util.SMDPatterns;
 import discult.modelapi.common.util.helpers.VectorHelper;
@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
@@ -22,6 +23,7 @@ public class SMDAnimation {
    public int totalFrames;
    public String animationName;
    private int frameIDBank = 0;
+   private HashMap<Integer, BonePos> map;
 
    public SMDAnimation(ValveStudioModel owner, String animationName, ResourceLocation resloc) throws Exception {
       this.owner = owner;
@@ -53,16 +55,9 @@ public class SMDAnimation {
       int lineCount = 0;
 
       try {
-         while(true) {
-            while(true) {
-               do {
-                  if ((currentLine = reader.readLine()) == null) {
-                     return;
-                  }
-
-                  ++lineCount;
-               } while(currentLine.startsWith("version"));
-
+         while((currentLine = reader.readLine()) != null) {
+            ++lineCount;
+            if (!currentLine.startsWith("version")) {
                if (currentLine.startsWith("nodes")) {
                   ++lineCount;
 
@@ -75,11 +70,12 @@ public class SMDAnimation {
                }
             }
          }
-      } catch (IOException var6) {
+
+      } catch (IOException var7) {
          if (lineCount == -1) {
-            throw new Exception("there was a problem opening the model file : " + resloc, var6);
+            throw new Exception("there was a problem opening the model file : " + resloc, var7);
          } else {
-            throw new Exception("an error occurred reading the SMD file \"" + resloc + "\" on line #" + lineCount, var6);
+            throw new Exception("an error occurred reading the SMD file \"" + resloc + "\" on line #" + lineCount, var7);
          }
       }
    }
@@ -99,8 +95,9 @@ public class SMDAnimation {
       int lineCount = count + 1;
       String currentLine = null;
 
+
+
       try {
-         while(true) {
             while((currentLine = reader.readLine()) != null) {
                ++lineCount;
                String[] params = SMDPatterns.MULTIPLE_WHITESPACE.split(currentLine);
@@ -116,25 +113,27 @@ public class SMDAnimation {
 
                   int boneIndex = Integer.parseInt(params[0]);
                   float[] locRots = new float[6];
-                  Bone rotBone = (Bone)this.bones.get(boneIndex);
 
                   for(int i = 1; i < 7; ++i) {
                      locRots[i - 1] = Float.parseFloat(params[i]);
                   }
 
-                  rotBone.setX(locRots[0]);
-                  rotBone.setY(locRots[1]);
-                  rotBone.setZ(locRots[2]);
-                  rotBone.setXR(locRots[3]);
-                  rotBone.setYR(locRots[4]);
-                  rotBone.setZR(locRots[5]);
                   Matrix4f animated = VectorHelper.matrix4FromLocRot(locRots[0], -locRots[1], -locRots[2], locRots[3], -locRots[4], -locRots[5]);
                   ((AnimationFrame)this.frames.get(currentTime)).addTransforms(boneIndex, animated);
+
+
+                  if(this.bones.get(boneIndex).bonePos.get(animationName) == null)
+                  {
+                     map = new HashMap<>();
+                     this.bones.get(boneIndex).bonePos.put(animationName, map);
+                     this.bones.get(boneIndex).bonePos.get(animationName).put(currentTime, new BonePos(locRots[0], -locRots[1], -locRots[2], locRots[3], -locRots[4], -locRots[5]));
+                  }
+                  else
+                  {
+                     this.bones.get(boneIndex).bonePos.get(animationName).put(currentTime, new BonePos(locRots[0], -locRots[1], -locRots[2], locRots[3], -locRots[4], -locRots[5]));
+                  }
                }
             }
-
-            return;
-         }
       } catch (Exception var12) {
          throw new Exception("an error occurred reading the SMD file \"" + resloc + "\" on line #" + lineCount, var12);
       }

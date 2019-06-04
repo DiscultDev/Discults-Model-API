@@ -1,3 +1,2 @@
-$body models/frenzyboar.smd
-$anim idle animations/fb_idle.smd
-$anim walk animations/fb_walk.smd
+$body models/temp.smd
+$anim idle animations/temp_idle.smd

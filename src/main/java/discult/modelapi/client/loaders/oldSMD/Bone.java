@@ -1,11 +1,12 @@
-package discult.modelapi.client.loaders.smd;
+package discult.modelapi.client.loaders.oldSMD;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
+
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 public class Bone {
    public Bone copy = null;
@@ -17,11 +18,11 @@ public class Bone {
    public Matrix4f rest;
    public Matrix4f restInverted;
    public Matrix4f modified = new Matrix4f();
-   public Matrix4f difference = new Matrix4f();
    public Matrix4f prevInverted = new Matrix4f();
    public ArrayList<Bone> children = new ArrayList();
    public HashMap<DeformVertex, Float> verts = new HashMap();
    public HashMap<String, HashMap<Integer, Matrix4f>>  animatedTransforms = new HashMap();
+   public HashMap<String, HashMap<Integer, BonePos>> bonePos = new HashMap<>();
    private float X;
    private float Y;
    private float Z;
@@ -45,10 +46,9 @@ public class Bone {
 
       for(Map.Entry<DeformVertex, Float> entry : bone.verts.entrySet()) {
             this.verts.put((DeformVertex) owner.verts.get((entry.getKey()).ID), entry.getValue());
-
       }
 
-      this.animatedTransforms = new HashMap<String, HashMap<Integer, Matrix4f>>(bone.animatedTransforms);
+      this.animatedTransforms = new HashMap(bone.animatedTransforms);
       this.restInverted = bone.restInverted;
       this.rest = bone.rest;
       bone.copy = this;
@@ -172,8 +172,26 @@ public class Bone {
       this.reset();
    }
 
-   public float getX() {
-      return this.X;
+   public float getX(String name, int frame)
+   {
+      float x;
+      if(this.parent == null || this.parent.ID == -1)
+      {
+         x = this.bonePos.get(name).get(frame).x;
+      }
+      else
+      {
+
+         if(this.parent.getX(name, frame) < 1 && this.parent.getX(name, frame) > -1)
+         {
+            x = this.parent.getX(name, frame) + this.bonePos.get(name).get(frame).x;
+         }
+         else
+         {
+            x = this.parent.getX(name, frame) * this.bonePos.get(name).get(frame).x;
+         }
+      }
+      return x;
    }
 
    public void setX(float x) {
@@ -188,16 +206,53 @@ public class Bone {
       this.NZ = nz;
    }
 
-   public float getY() {
-      return this.Y;
+   public float getY(String name, int frame) {
+      float y;
+      if(this.parent == null || this.parent.ID == -1)
+      {
+         y = this.bonePos.get(name).get(frame).y;
+      }
+      else
+      {
+
+         if(this.parent.getY(name, frame) < 1 && this.parent.getY(name, frame) > -1)
+         {
+
+         }
+         else
+         {
+
+         }
+
+
+         y = this.parent.getY(name, frame) * this.bonePos.get(name).get(frame).y;
+      }
+      return y;
    }
 
    public void setY(float y) {
       this.Y = y;
    }
 
-   public float getZ() {
-      return this.Z;
+   public float getZ(String name, int frame) {
+      float z;
+      if(this.parent == null || this.parent.ID == -1)
+      {
+         z = this.bonePos.get(name).get(frame).z;
+      }
+      else
+      {
+
+         if(this.parent.getZ(name, frame) < 1 && this.parent.getZ(name, frame) > -1)
+         {
+            z = this.parent.getZ(name, frame) + this.bonePos.get(name).get(frame).z;
+         }
+         else
+         {
+            z = this.parent.getZ(name, frame) * this.bonePos.get(name).get(frame).z;
+         }
+      }
+      return z;
    }
 
    public void setZ(float z) {
@@ -205,6 +260,8 @@ public class Bone {
    }
 
    public float getXR() {
+
+
       return this.XR;
    }
 

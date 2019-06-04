@@ -1,4 +1,4 @@
-package discult.modelapi.client.loaders.smd;
+package discult.modelapi.client.loaders.oldSMD;
 
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;

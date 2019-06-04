@@ -1,6 +1,6 @@
 package discult.modelapi.main;
 
-import discult.modelapi.client.loaders.smd.ValveStudioModel;
+import discult.modelapi.client.loaders.oldSMD.ValveStudioModel;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderLocation {

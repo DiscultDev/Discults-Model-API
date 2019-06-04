@@ -1,4 +1,4 @@
-package discult.modelapi.client.loaders.smd;
+package discult.modelapi.client.loaders.oldSMD;
 
 import discult.modelapi.common.util.helpers.VectorHelper;
 import java.util.ArrayList;

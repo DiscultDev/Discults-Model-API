@@ -1,7 +1,7 @@
 package discult.modelapi.client.models;
 
-import discult.modelapi.client.loaders.smd.SMDAnimation;
-import discult.modelapi.client.loaders.smd.ValveStudioModel;
+import discult.modelapi.client.loaders.oldSMD.SMDAnimation;
+import discult.modelapi.client.loaders.oldSMD.ValveStudioModel;
 import discult.modelapi.common.entities.EntitySMDBase;
 import discult.modelapi.common.entities.animation.IncrementingVariable;
 import net.minecraft.client.Minecraft;
