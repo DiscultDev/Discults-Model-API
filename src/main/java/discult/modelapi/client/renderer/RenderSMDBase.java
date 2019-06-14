@@ -120,6 +120,7 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
 
             if(b.ID == a.parent.ID)
             {
+               System.out.println("Got into the bone parent ID");
                Vector3f newPos =new Vector3f(currentFrame.transforms.get(b.ID).m03, currentFrame.transforms.get(b.ID).m13, currentFrame.transforms.get(b.ID).m23);
 
                //    if(a.getPosition() != null)
