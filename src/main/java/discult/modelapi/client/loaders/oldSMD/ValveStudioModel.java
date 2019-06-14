@@ -22,7 +22,7 @@ public class ValveStudioModel implements IModel, IDiscultModel {
    public SMDModel body;
    public HashMap<String, SMDAnimation> anims;
    protected Bone root;
-   ArrayList<Bone> allBones;
+   public ArrayList<Bone> allBones;
    public SMDAnimation currentAnimation;
    public ResourceLocation resource;
    public static boolean debugModel = false;

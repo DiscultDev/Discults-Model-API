@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import discult.modelapi.utils.Quaternion;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -172,116 +173,19 @@ public class Bone {
       this.reset();
    }
 
-   public float getX(String name, int frame)
+   public Vector3f getPosition()
    {
-      float x;
-      if(this.parent == null || this.parent.ID == -1)
-      {
-         x = this.bonePos.get(name).get(frame).x;
-      }
-      else
-      {
-
-         if(this.parent.getX(name, frame) < 1 && this.parent.getX(name, frame) > -1)
-         {
-            x = this.parent.getX(name, frame) + this.bonePos.get(name).get(frame).x;
-         }
-         else
-         {
-            x = this.parent.getX(name, frame) * this.bonePos.get(name).get(frame).x;
-         }
-      }
-      return x;
+     // AnimationFrame currentFrame = this.owner.currentFrame();
+     // HashMap<Integer, Matrix4f> precalcArray = this.animatedTransforms.get(currentFrame.owner.animationName);
+     // Matrix4f animation = precalcArray.get(currentFrame.ID);
+    return new Vector3f(modified.m03, modified.m13, modified.m23);
    }
 
-   public void setX(float x) {
-      this.X = x;
-   }
-
-   public float getNZ() {
-      return this.NZ;
-   }
-
-   public void setNZ(float nz) {
-      this.NZ = nz;
-   }
-
-   public float getY(String name, int frame) {
-      float y;
-      if(this.parent == null || this.parent.ID == -1)
-      {
-         y = this.bonePos.get(name).get(frame).y;
-      }
-      else
-      {
-
-         if(this.parent.getY(name, frame) < 1 && this.parent.getY(name, frame) > -1)
-         {
-
-         }
-         else
-         {
-
-         }
-
-
-         y = this.parent.getY(name, frame) * this.bonePos.get(name).get(frame).y;
-      }
-      return y;
-   }
-
-   public void setY(float y) {
-      this.Y = y;
-   }
-
-   public float getZ(String name, int frame) {
-      float z;
-      if(this.parent == null || this.parent.ID == -1)
-      {
-         z = this.bonePos.get(name).get(frame).z;
-      }
-      else
-      {
-
-         if(this.parent.getZ(name, frame) < 1 && this.parent.getZ(name, frame) > -1)
-         {
-            z = this.parent.getZ(name, frame) + this.bonePos.get(name).get(frame).z;
-         }
-         else
-         {
-            z = this.parent.getZ(name, frame) * this.bonePos.get(name).get(frame).z;
-         }
-      }
-      return z;
-   }
-
-   public void setZ(float z) {
-      this.Z = z;
-   }
-
-   public float getXR() {
-
-
-      return this.XR;
-   }
-
-   public void setXR(float xR) {
-      this.XR = xR;
-   }
-
-   public float getYR() {
-      return this.YR;
-   }
-
-   public void setYR(float yR) {
-      this.YR = yR;
-   }
-
-   public float getZR() {
-      return this.ZR;
-   }
-
-   public void setZR(float zR) {
-      this.ZR = zR;
+   public Quaternion getRotation()
+   {
+      //AnimationFrame currentFrame = this.owner.currentFrame();
+     // HashMap<Integer, Matrix4f> precalcArray = this.animatedTransforms.get(currentFrame.owner.animationName);
+     // Matrix4f animation = precalcArray.get(currentFrame.ID);
+      return Quaternion.fromMatrix(modified);
    }
 }

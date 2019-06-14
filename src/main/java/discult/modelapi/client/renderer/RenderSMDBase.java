@@ -1,6 +1,7 @@
 package discult.modelapi.client.renderer;
 
 import discult.modelapi.client.LayerHeldItemTest;
+import discult.modelapi.client.loaders.oldSMD.AnimationFrame;
 import discult.modelapi.client.loaders.oldSMD.Bone;
 import discult.modelapi.client.models.ModelSMDBase;
 import discult.modelapi.common.entities.EntitySMDBase;
@@ -14,6 +15,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector;
+import org.lwjgl.util.vector.Vector3f;
 
 @SideOnly(Side.CLIENT)
 public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving<T> {
@@ -27,7 +31,6 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
       GlStateManager.pushMatrix();
       GlStateManager.disableCull();
 
-      //this.mainModel = ((EntitySMDBase)entity.getM);
       this.mainModel = ((EntitySMDBase)entity).getModel();
       this.getMainModel().swingProgress = this.getSwingProgress(entity, partialTicks);
 
@@ -66,17 +69,19 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
 
        GlStateManager.scale(0.5,0.5,0.5);
 
-      Bone bone = ((ModelSMDBase)getMainModel()).theModel.currentAnimation.bones.get(1);
-      int currentFrame = ((ModelSMDBase)getMainModel()).theModel.currentAnimation.currentFrameIndex;
-      String currentName = ((ModelSMDBase)getMainModel()).theModel.currentAnimation.animationName;
+
 
         this.renderLivingAt(entity,x,y,z);
+
+
+        if(((ModelSMDBase)this.getMainModel()).theModel.body.currentFrame() != null)
+        renderSkeleton();
 
       GlStateManager.popMatrix();
 
       /**
        * TEMP
-       */
+
 
 
 
@@ -94,6 +99,48 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
 
 
        test.doRender(entity, (float)x, (float)y, (float)z);
+       */
 
+   }
+
+   private void renderSkeleton()
+   {
+      AnimationFrame currentFrame = ((ModelSMDBase)this.getMainModel()).theModel.body.currentAnim.frames.get(((ModelSMDBase)this.getMainModel()).theModel.body.currentAnim.currentFrameIndex);
+      GL11.glBegin(GL11.GL_LINES);
+
+      ((ModelSMDBase)this.getMainModel()).theModel.allBones.forEach(a -> {
+
+
+         Vector3f pos = new Vector3f(currentFrame.transforms.get(a.ID).m03, currentFrame.transforms.get(a.ID).m13, currentFrame.transforms.get(a.ID).m23);
+
+         // if(a.getPosition() != null)
+        // GL11.glVertex3f(a.getPosition().x,a.getPosition().y,a.getPosition().z);
+
+         ((ModelSMDBase)this.getMainModel()).theModel.allBones.forEach(b -> {
+
+            if(b.ID == a.parent.ID)
+            {
+               Vector3f newPos =new Vector3f(currentFrame.transforms.get(b.ID).m03, currentFrame.transforms.get(b.ID).m13, currentFrame.transforms.get(b.ID).m23);
+
+               //    if(a.getPosition() != null)
+           //    GL11.glVertex3f(b.getPosition().x,b.getPosition().y,b.getPosition().z);
+            }
+
+         });
+
+      });
+
+
+      GL11.glEnd();
+/*
+      GL11.glBegin(GL11.GL_POINTS);
+      ((ModelSMDBase)this.getMainModel()).theModel.allBones.forEach(a -> {
+
+         GL11.glVertex3f(a.getPosition().x,a.getPosition().y,a.getPosition().z);
+      });
+
+      GL11.glEnd();
+
+       */
    }
 }
