@@ -4,7 +4,7 @@ import org.lwjgl.util.vector.Matrix4f;
 
 public class Quaternion {
 
-    private float x, y, z, w;
+    public float x, y, z, w;
 
     /**
      * Creates a quaternion and normalizes it.

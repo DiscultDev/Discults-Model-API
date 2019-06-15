@@ -6,7 +6,7 @@ import org.lwjgl.util.vector.Matrix4f;
 
 public class AnimationFrame {
    public ArrayList<Matrix4f> transforms = new ArrayList();
-   public ArrayList invertTransforms = new ArrayList();
+   public ArrayList<Matrix4f> invertTransforms = new ArrayList();
    public SMDAnimation owner;
    public final int ID;
 

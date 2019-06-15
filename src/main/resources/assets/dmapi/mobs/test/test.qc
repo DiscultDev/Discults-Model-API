@@ -1,2 +1,2 @@
-$body models/temp.smd
-$anim idle animations/temp_idle.smd
+$body models/frenzyboar.smd
+$anim idle animations/fb_idle.smd

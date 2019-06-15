@@ -8,6 +8,7 @@ import java.util.Map;
 import discult.modelapi.utils.Quaternion;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 public class Bone {
    public Bone copy = null;
@@ -173,12 +174,23 @@ public class Bone {
       this.reset();
    }
 
-   public Vector3f getPosition()
+   public Vector4f getPosition()
    {
-     // AnimationFrame currentFrame = this.owner.currentFrame();
-     // HashMap<Integer, Matrix4f> precalcArray = this.animatedTransforms.get(currentFrame.owner.animationName);
-     // Matrix4f animation = precalcArray.get(currentFrame.ID);
-    return new Vector3f(modified.m03, modified.m13, modified.m23);
+
+      //AnimationFrame currentFrame = (AnimationFrame)this.owner.currentAnim.frames.get(this.owner.currentAnim.currentFrameIndex);
+
+
+
+
+      //AnimationFrame currentFrame = this.owner.currentFrame();
+     // HashMap<Integer, Matrix4f> precalcArray = this.animatedTransforms.get(this.owner.currentAnim.animationName);
+
+     // Matrix4f animation = currentFrame.transforms.get(this.ID);
+   // return new Vector3f(animation.m03, animation.m13, animation.m23);
+
+    //  HashMap<Integer, BonePos> precalcArray = this.bonePos.get(this.owner.owner.currentAnimation.animationName);
+     // BonePos pose = precalcArray.get(this.owner.owner.currentAnimation.currentFrameIndex);
+      return new Vector4f(0,0,0,1);
    }
 
    public Quaternion getRotation()
