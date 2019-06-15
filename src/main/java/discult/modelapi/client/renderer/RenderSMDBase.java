@@ -87,6 +87,8 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
 
       GlStateManager.popMatrix();
 
+      test.doRender(entity,x,y,z);
+
    }
 
 
@@ -112,6 +114,7 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
          float x1 = screenPos.getX() /16, y1 = screenPos.getY() /16, z1 = screenPos.getZ() /16;
 
 
+
          for(Bone child : parent.children)
          {
             screenPos.set(child.getPosition());
@@ -123,7 +126,6 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
             GL11.glColor3f(1f,1f,1f);
 
          }
-
          GL11.glColor4f(0.0f, 0.1f, 0.8f, 0.5f);
          drawDot(x1,y1,z1);
          GL11.glColor3f(1f,1f,1f);

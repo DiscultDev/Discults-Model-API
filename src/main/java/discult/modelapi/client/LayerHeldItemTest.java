@@ -12,12 +12,13 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector4f;
 
 public class LayerHeldItemTest implements LayerRenderer<EntityLivingBase>
 {
 
-    float tx, ty,tz;
-    public void doRender(EntityLivingBase entity, float x, float y, float z)
+    public void doRender(EntityLivingBase entity, double x, double y, double z)
     {
         if(entity instanceof EntitySMDBase)
         {
@@ -25,22 +26,16 @@ public class LayerHeldItemTest implements LayerRenderer<EntityLivingBase>
 
             GlStateManager.pushMatrix();
 
-            /*
-            Bone bone = model.theModel.currentAnimation.bones.get(1);
-            BonePos pos = bone.bonePos.get(model.theModel.currentAnimation.animationName).get(model.theModel.currentAnimation.currentFrameIndex);
-            GlStateManager.scale(1,1,1);
-            GlStateManager.translate(x + bone.getX(model.theModel.currentAnimation.animationName, model.theModel.currentAnimation.currentFrameIndex), y + bone.getY(model.theModel.currentAnimation.animationName, model.theModel.currentAnimation.currentFrameIndex),z + bone .getZ(model.theModel.currentAnimation.animationName, model.theModel.currentAnimation.currentFrameIndex));
-            GlStateManager.rotate(pos.xr,1,0,0);
-            GlStateManager.rotate(pos.yr,0,1,0);
-            GlStateManager.rotate(pos.zr,0,0,1);
+            Vector4f screenPos = new Vector4f(0,0,0,1);
+            Matrix4f.transform(model.theModel.body.currentAnim.frames.get(model.theModel.body.currentAnim.currentFrameIndex).transforms.get(18), screenPos, screenPos);
+            System.out.println(model.theModel.body.currentAnim.bones.get(18).name);
 
+            float x1 = screenPos.getX()  /16, y1 = screenPos.getY() / 16 , z1 = screenPos.getZ() /16;
 
-             */
-            tx = model.theModel.currentAnimation.bones.get(2).modified.m03;
-            ty = model.theModel.currentAnimation.bones.get(2).modified.m13;
-            tz = model.theModel.currentAnimation.bones.get(2).modified.m23;
-
-
+            GlStateManager.translate(x1, y1 ,z1);
+            GlStateManager.scale(0.5,-0.5,-0.5);
+            GlStateManager.rotate(45,-1,0,0);
+            GlStateManager.rotate(90,0,-1,0);
             Minecraft.getMinecraft().getItemRenderer().renderItem(entity, new ItemStack(Items.IRON_SWORD), ItemCameraTransforms.TransformType.NONE);
 
             GlStateManager.popMatrix();
