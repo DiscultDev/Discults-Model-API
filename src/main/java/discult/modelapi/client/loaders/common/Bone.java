@@ -68,7 +68,7 @@ public class Bone
         this.inverseBindMatrix = Matrix4.invert(bindMatrix, this.inverseBindMatrix);
     }
 
-    private void calculateModified()
+    private void calculateTransform()
     {
 
     }
