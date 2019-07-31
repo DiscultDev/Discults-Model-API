@@ -1,5 +1,5 @@
 package discult.modelapi.client.loaders.common;
 
-public class Bone
+public class Animation
 {
 }
