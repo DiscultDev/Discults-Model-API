@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import discult.modelapi.client.models.ModelSMDBase;
 import discult.modelapi.utils.Quaternion;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
@@ -168,36 +169,13 @@ public class Bone {
          this.modified = this.modified == null ? animatedChange : Matrix4f.mul(this.modified, animatedChange, this.modified);
       }
 
+
+
+
       this.verts.entrySet().forEach((entry) -> {
          ((DeformVertex)entry.getKey()).applyModified(this, entry.getValue());
       });
+
       this.reset();
-   }
-
-   public Vector4f getPosition()
-   {
-
-      //AnimationFrame currentFrame = (AnimationFrame)this.owner.currentAnim.frames.get(this.owner.currentAnim.currentFrameIndex);
-
-
-
-
-      //AnimationFrame currentFrame = this.owner.currentFrame();
-     // HashMap<Integer, Matrix4f> precalcArray = this.animatedTransforms.get(this.owner.currentAnim.animationName);
-
-     // Matrix4f animation = currentFrame.transforms.get(this.ID);
-   // return new Vector3f(animation.m03, animation.m13, animation.m23);
-
-    //  HashMap<Integer, BonePos> precalcArray = this.bonePos.get(this.owner.owner.currentAnimation.animationName);
-     // BonePos pose = precalcArray.get(this.owner.owner.currentAnimation.currentFrameIndex);
-      return new Vector4f(0,0,0,1);
-   }
-
-   public Quaternion getRotation()
-   {
-      //AnimationFrame currentFrame = this.owner.currentFrame();
-     // HashMap<Integer, Matrix4f> precalcArray = this.animatedTransforms.get(currentFrame.owner.animationName);
-     // Matrix4f animation = precalcArray.get(currentFrame.ID);
-      return Quaternion.fromMatrix(modified);
    }
 }

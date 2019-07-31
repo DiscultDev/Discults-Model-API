@@ -1,12 +1,15 @@
 package discult.modelapi.client.models;
 
 import discult.modelapi.client.loaders.oldSMD.SMDAnimation;
+import discult.modelapi.client.loaders.oldSMD.Socket;
 import discult.modelapi.client.loaders.oldSMD.ValveStudioModel;
 import discult.modelapi.common.entities.EntitySMDBase;
 import discult.modelapi.common.entities.animation.IncrementingVariable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.entity.Entity;
+
+import java.util.ArrayList;
 
 public class ModelSMDBase extends ModelBase {
    public EntitySMDBase mob;
@@ -15,6 +18,7 @@ public class ModelSMDBase extends ModelBase {
    protected float movementThreshold = 0.2F;
    public String path;
    public String name;
+   public ArrayList<Socket> sockets = new ArrayList<>();
 
    public ModelSMDBase(String path, String name) {
       this.path = path;

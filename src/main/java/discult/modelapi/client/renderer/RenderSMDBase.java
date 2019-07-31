@@ -3,14 +3,19 @@ package discult.modelapi.client.renderer;
 import discult.modelapi.client.LayerHeldItemTest;
 import discult.modelapi.client.loaders.oldSMD.AnimationFrame;
 import discult.modelapi.client.loaders.oldSMD.Bone;
+import discult.modelapi.client.loaders.oldSMD.Socket;
+import discult.modelapi.client.loaders.oldSMD.ValveStudioModel;
 import discult.modelapi.client.models.ModelSMDBase;
 import discult.modelapi.common.entities.EntitySMDBase;
+import discult.modelapi.testing.ModelTest;
+import discult.modelapi.testing.ModelTestingTwo;
 import discult.modelapi.utils.Quaternion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -31,7 +36,6 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
       super(Minecraft.getMinecraft().getRenderManager(), (ModelBase)null, shadowsizeIn);
    }
 
-   LayerHeldItemTest test = new LayerHeldItemTest();
 
    public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
       GlStateManager.pushMatrix();
@@ -74,12 +78,6 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
          this.renderModel(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0.0625F);
 
 
-        // GlStateManager.scale((float)Math.pow(-4,-1),(float)Math.pow(-4,-1),(float)Math.pow(-4,-1));
-
-         renderSkeleton();
-
-
-
       } catch (Exception var17) {
          var17.printStackTrace();
       }
@@ -87,15 +85,149 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
 
       GlStateManager.popMatrix();
 
-      test.doRender(entity,x,y,z);
+      GlStateManager.pushMatrix();
+
+      /**
+      for(Socket soc : ((ModelSMDBase)getMainModel()).sockets)
+      {
+         for(Bone bone: ((ModelSMDBase)getMainModel()).theModel.body.currentAnim.bones)
+         {
+            if(soc.getBoneID() == bone.ID)
+            {
+               Vector4f screenPos = new Vector4f(0,0,0,1);
+               Matrix4f.transform(((ModelSMDBase)getMainModel()).theModel.body.currentAnim.frames.get(((ModelSMDBase)getMainModel()).theModel.body.currentAnim.currentFrameIndex).transforms.get(bone.ID), screenPos, screenPos);
+
+               soc.setLocation(screenPos);
+            }
+         }
+
+
+
+         if(soc.getLocation() != null)
+         {
+            this.renderLivingAt(entity,x,y,z);
+            soc.drawSocket();
+         }
+      }
+
+       */
+
+
+      renderSkeleton(entity,x,y,z);
+
+      GlStateManager.pushMatrix();
+
+      this.renderLivingAt(entity, x, y, z);
+
+
+      Vector4f pos = new Vector4f(0,0,0,1);
+      Matrix4f.transform(((ModelSMDBase)getMainModel()).theModel.body.currentAnim.frames.get(((ModelSMDBase)getMainModel()).theModel.body.currentAnim.currentFrameIndex).transforms.get(18), pos,pos);
+      pos = new Vector4f(pos.x /16,pos.y/16,pos.z /16,1);
+
+
+
+      if(this.getMainModel() instanceof ModelTest)
+      {
+
+         GlStateManager.scale(1,1,-1);
+         GlStateManager.translate(pos.x,pos.y,pos.z -1);
+
+
+         ((ModelTest) this.getMainModel()).head.render(1);
+
+         ((ModelTest) this.getMainModel()).update(pos);
+      }
+
+      GlStateManager.popMatrix();
+
+      /**
+      GlStateManager.pushMatrix();
+
+      this.renderLivingAt(entity,x,y,z);
+
+      Vector4f screenPos = new Vector4f(0,0,0,1);
+
+      Matrix4f.transform(((ModelSMDBase)getMainModel()).theModel.body.currentAnim.frames.get(((ModelSMDBase)getMainModel()).theModel.body.currentAnim.currentFrameIndex).transforms.get(18), screenPos, screenPos);
+      ///16
+     float x1 = screenPos.getX() /16, y1 = screenPos.getY() /47 , z1 = screenPos.getZ() / 5.3f;
+
+      GlStateManager.translate(x1,y1,-z1);
+
+      Minecraft.getMinecraft().getRenderItem().renderItem(new ItemStack(Items.IRON_SWORD), entity, ItemCameraTransforms.TransformType.NONE, false);
+
+
+      GlStateManager.popMatrix();
+       **/
 
    }
 
 
-   private void renderSkeleton()
+   private void newRenderSkel()
+   {
+      GlStateManager.scale(-1,-1,1);
+      GlStateManager.rotate(90,1,0,0);
+      GlStateManager.disableDepth();
+
+      GL11. glDisable(GL11.GL_CULL_FACE);
+      GL11.glDisable(GL11.GL_TEXTURE_2D);
+      GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+      GL11.glDisable(GL11.GL_LIGHTING);
+
+      ValveStudioModel model = ((ModelSMDBase)getMainModel()).theModel;
+
+
+      model.allBones.forEach( parent -> {
+
+
+
+
+         if(parent.modified != null)
+         {
+
+
+            System.out.println("modified is not null");
+            Vector4f parentPos = new Vector4f(0, 0, 0, 1);
+            Matrix4f.transform(parent.modified, parentPos, parentPos);
+
+            GL11.glColor4f(0.0f, 0.1f, 0.8f, 0.5f);
+            drawDot(parentPos.x,parentPos.y,parentPos.y);
+            GL11.glColor3f(1f,1f,1f);
+
+            parent.children.forEach(child -> {
+
+               Vector4f childPos = new Vector4f(0, 0, 0, 1);
+
+               Matrix4f.transform(child.modified, childPos, childPos);
+
+               GL11.glColor4f(0.0f, 0.8f, 0.1f, 0.5f);
+               drawLine(parentPos.x,parentPos.y,parentPos.y, childPos.x,childPos.y,childPos.z);
+               GL11.glColor3f(1f,1f,1f);
+
+            });
+
+         }
+
+      });
+
+      GL11.glEnable(GL11.GL_CULL_FACE);
+      GL11.glEnable(GL11.GL_TEXTURE_2D);
+      GL11.glEnable(GL11.GL_ALPHA_TEST);
+
+      GL11.glEnable(GL11.GL_LIGHTING);
+
+      GlStateManager.enableDepth();
+      GlStateManager.disableCull();
+
+
+   }
+
+   private void renderSkeleton(T entity, double x, double y, double z)
    {
 
-      GlStateManager.scale(1,-1,-1);
+      GlStateManager.popMatrix();
+
+      this.renderLivingAt(entity, x, y, z);
+     // GlStateManager.scale(1,-1,-1);
       GlStateManager.rotate(90,1,0,0);
       GlStateManager.disableDepth();
 
@@ -107,30 +239,39 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
 
       for(Bone parent :  ((ModelSMDBase)getMainModel()).theModel.body.currentAnim.bones)
       {
-         Vector4f screenPos = new Vector4f();
-         screenPos.set(parent.getPosition());
+         Vector4f screenPos = new Vector4f(0,0,0,1);
          Matrix4f.transform(((ModelSMDBase)getMainModel()).theModel.body.currentAnim.frames.get(((ModelSMDBase)getMainModel()).theModel.body.currentAnim.currentFrameIndex).transforms.get(parent.ID), screenPos, screenPos);
+         ///16
+         float x1 = screenPos.getX() /16, y1 = screenPos.getY() /16 , z1 = screenPos.getZ() /16;
 
-         float x1 = screenPos.getX() /16, y1 = screenPos.getY() /16, z1 = screenPos.getZ() /16;
 
+         System.out.println("Bone: " + parent.ID);
+         System.out.println("Animation: " + ((ModelSMDBase)getMainModel()).theModel.body.currentAnim.animationName);
+         System.out.println("Frame: " + ((ModelSMDBase)getMainModel()).theModel.body.currentAnim.currentFrameIndex);
+         System.out.println("X " + x1 + " Y " + y1 + " Z " + z1);
+
+
+         GL11.glColor4f(0.0f, 0.1f, 0.8f, 0.5f);
+         drawDot(x1,y1,z1);
+         GL11.glColor3f(1f,1f,1f);
 
 
          for(Bone child : parent.children)
          {
-            screenPos.set(child.getPosition());
-            Matrix4f.transform(((ModelSMDBase)getMainModel()).theModel.body.currentAnim.frames.get(((ModelSMDBase)getMainModel()).theModel.body.currentAnim.currentFrameIndex).transforms.get(child.ID), screenPos, screenPos);
-            float x2 = screenPos.getX() /16, y2 = screenPos.getY() /16, z2 = screenPos.getZ() /16;
+            screenPos = new Vector4f(0,0,0,1);
+            Matrix4f mat  = ((ModelSMDBase)getMainModel()).theModel.body.currentAnim.frames.get(((ModelSMDBase)getMainModel()).theModel.body.currentAnim.currentFrameIndex).transforms.get(child.ID);
+
+            Matrix4f.transform(mat, screenPos, screenPos);
+            float x2 = screenPos.getX()/16, y2 = screenPos.getY()/16, z2 = screenPos.getZ()/16;
 
             GL11.glColor4f(0.0f, 0.8f, 0.1f, 0.5f);
             drawLine(x1,y1,z1, x2,y2,z2);
             GL11.glColor3f(1f,1f,1f);
 
          }
-         GL11.glColor4f(0.0f, 0.1f, 0.8f, 0.5f);
-         drawDot(x1,y1,z1);
-         GL11.glColor3f(1f,1f,1f);
 
       }
+
 
       GL11.glEnable(GL11.GL_CULL_FACE);
       GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -141,13 +282,17 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
       GlStateManager.enableDepth();
       GlStateManager.disableCull();
 
+      GlStateManager.popMatrix();
+
    }
+
+
 
 
    private void drawDot(float x, float y, float z)
    {
-      GL11.glBegin(GL11.GL_POINTS);
       GL11.glPointSize(10F);
+      GL11.glBegin(GL11.GL_POINTS);
       GL11.glVertex3d(x,y,z);
       GL11.glEnd();
    }
