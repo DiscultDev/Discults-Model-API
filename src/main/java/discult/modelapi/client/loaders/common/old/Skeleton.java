@@ -1,4 +1,4 @@
-package discult.modelapi.client.loaders.common;
+package discult.modelapi.client.loaders.common.old;
 
 import discult.modelapi.DiscultsModelAPI;
 
@@ -7,8 +7,14 @@ import java.util.List;
 
 public class Skeleton
 {
+    private ISkeletonOwner owner;
     private List<Bone> skeleton = new ArrayList<>();
 
+
+    public Skeleton(ISkeletonOwner owner)
+    {
+        this.owner = owner;
+    }
 
     public Bone getBone(String name)
     {
@@ -18,11 +24,21 @@ public class Skeleton
 
     }
 
+    public ISkeletonOwner getOwner()
+    {
+        return owner;
+    }
+
     public Bone getBone(int ID)
     {
         return skeleton.stream()
                 .filter(bone -> bone.getID() == ID)
                 .findFirst().orElse(null);
+    }
+
+    public List<Bone> getBoneList()
+    {
+        return skeleton;
     }
 
     public void addBone(Bone bone)
