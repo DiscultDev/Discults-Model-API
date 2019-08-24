@@ -1,74 +1,64 @@
 package discult.modelapi.client.loaders.common;
 
-import discult.modelapi.utils.ModelHelper;
+import org.joml.Matrix4f;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Quat4f;
-import javax.vecmath.Vector3f;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * This is a class to represents a bone is a skeleton structure.
+ *
+ * { int ID}
+ */
 public class Bone
 {
     private final int ID;
-    private final String name;
-    private final Bone parent;
+    private final String NAME;
+    /*
+    Some model loaders don't register the bones in order so this is to ensure that most model formats will load and
+    work without needing to modify.
+     */
+    private int parentID;
+
+    /*
+    This will be loaded at the end of the models initialisation through the Skeleton class using the fixUp() method
+    */
+    private Bone parent;
 
 
-    private Vector3f bindPos = new Vector3f();
-    private Quat4f bindRot = new Quat4f();
-    private Vector3f bindScale = new Vector3f(1,1,1);
+    /*
+     * at the end this will also recalculate to ensure the rest transform is correct to world space and not bone space.
+     */
+    public Matrix4f restMatrix,
+    inverseRestMatrix,
+    transformMatrix;
 
-    private final Matrix4f bindMatrix = new Matrix4f();
-    private final Matrix4f transformMatrix = new Matrix4f();
-    private final Matrix4f inverseBindMatrix = new Matrix4f();
+    /*
+    This is the skeleton structure the bone is apart of.
+     */
+    public Skeleton skeleton;
 
-    private final List<Bone> children = new ArrayList<>();
-    private final Map<Integer, Float> verts = new HashMap<>();
-
-
-    public Bone(int ID, String name, Bone parent)
-    {
-
-        if(ID < 0)
-        {
-            throw new IllegalArgumentException("Bone id cannot be less than 0");
-        }
-
-        this.ID = ID;
-
-        if(name == null)
-        {
-            throw new IllegalArgumentException("Bone name cannot be null");
-        }
-
-        this.name = name;
-
-        this.parent = parent;
-
-        bindMatrix.setIdentity();
-        transformMatrix.setIdentity();
-        inverseBindMatrix.setIdentity();
-    }
+    /*
+    This is a list of all children associated with this bone.
+     */
+    public List<Bone> children = new ArrayList<>();
 
 
-    public void addVertexWeight(int vertID, float weight)
-    {
-        this.verts.put(vertID, weight);
-    }
+    /*
+    This is a map of all the vertices that this bone can manipulate and the weight value it can manipulate it by.
+     */
+    public Map<DeformVertex, Float> verts = new HashMap<>();
 
-    protected void calculateBindMatrices()
-    {
-       this.bindMatrix.set(ModelHelper.createMatrix(bindPos, bindRot, bindScale));
+    /*
+    This is a map that stores
+     */
+    public Map<String, Map<Integer, Matrix4f>> animationTransforms = new HashMap<>();
 
-       if(this.parent == null) transformMatrix.set(bindMatrix);
 
-       else this.parent.transformMatrix.mul(bindMatrix, transformMatrix);
 
-       this.transformMatrix.invert(inverseBindMatrix);
-    }
 
     public int getID()
     {
@@ -77,7 +67,21 @@ public class Bone
 
     public String getName()
     {
-        return name;
+        return NAME;
+    }
+
+    public Bone(int ID, String name, int parentID)
+    {
+        this.ID = ID;
+        this.NAME = name;
+        this.parentID = parentID;
+
+
+    }
+
+    public int getParentID()
+    {
+        return parentID;
     }
 
     public Bone getParent()
@@ -85,43 +89,86 @@ public class Bone
         return parent;
     }
 
-    public Vector3f getBindPos()
+    public void setParent(Bone parent)
     {
-        return bindPos;
+        this.parent = parent;
     }
 
-    public Quat4f getBindRot()
+
+    public void inverseRestMatrix()
     {
-        return bindRot;
+        this.inverseRestMatrix = restMatrix;
+        inverseRestMatrix.invert();
     }
 
-    public Vector3f getBindScale()
+    public void reset()
     {
-        return bindScale;
+        this.transformMatrix.identity();
     }
 
-    public Matrix4f getBindMatrix()
+    /**
+     * This method will convert/reform the matrix from (bone space) to (world space)
+     * @param parentMatrix
+     */
+    public void reform(Matrix4f parentMatrix)
     {
-        return bindMatrix;
+        parentMatrix.mul(restMatrix, restMatrix);
+        //TODO put debug method
+        this.reformChildren();
     }
 
-    public Matrix4f getTransformMatrix()
+    public void reformChildren()
     {
-        return transformMatrix;
+        children.forEach(child -> child.reform(this.restMatrix));
     }
 
-    public Matrix4f getInverseBindMatrix()
+    /**
+     * This will init the transform matrix if it is null when it needs to be called.
+     * @return the transform matrix;
+     */
+    protected Matrix4f initTransform()
     {
-        return inverseBindMatrix;
+        return this.transformMatrix == null ? this.transformMatrix = new Matrix4f() : this.transformMatrix;
     }
 
-    public List<Bone> getChildren()
+
+    public void precalcAnimation()
     {
-        return children;
+        
     }
 
-    public Map<Integer, Float> getVerts()
+    /**
+     * This will set the TransformMatrix
+     */
+    public void setTransformMatrix()
     {
-        return verts;
+        Matrix4f realInverted;
+        Matrix4f real;
+
+        if(this.skeleton.model.animator.hasAnimations() && this.skeleton.model.animator.currentAnimation != null)
+        {
+            Frame currentFrame = this.skeleton.model.animator.currentAnimation.frames.get(this.skeleton.model.animator.currentAnimation.currentFrame);
+            realInverted = currentFrame.transforms.get(this.ID);
+            real = currentFrame.invertTransforms.get(this.ID);
+        }
+        else
+        {
+            realInverted = this.restMatrix;
+            real = this.inverseRestMatrix;
+        }
+
+        Matrix4f delta = new Matrix4f();
+        Matrix4f absolute = new Matrix4f();
+
+        realInverted.mul(real, delta);
+
+        this.transformMatrix = this.parent != null ? this.parent.transformMatrix.mul(delta, this.initTransform()) : delta;
+
+        real.mul(this.transformMatrix = this.parent != null ? this.parent.transformMatrix.mul(delta, this.initTransform()) : delta, absolute);
+
+        //TODO invert absolute to prevInverted if
+
+        this.children.forEach(Bone::setTransformMatrix);
     }
+
 }
