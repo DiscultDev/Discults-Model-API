@@ -1,6 +1,8 @@
 package discult.modelapi.client.loaders.common;
 
+import org.joml.Matrix4f;
 import org.joml.Vector4f;
+
 
 public class DeformVertex extends Vertex
 {
@@ -24,6 +26,53 @@ public class DeformVertex extends Vertex
         this.currentNormalLocation = new Vector4f();
         this.restLocaton = new Vector4f(x, y, z, 1F);
         this.restNormalLocation = new Vector4f(xn, yn, zn,0F);
+    }
+
+    public void applyTransform(Bone bone, float weight)
+    {
+        Matrix4f transform = bone.transformMatrix;
+
+        if(transform != null)
+        {
+            if(currentLocation == null)
+                currentLocation = new Vector4f();
+            if(currentNormalLocation == null)
+                currentNormalLocation = new Vector4f();
+
+            Vector4f locTemp = transform.transform(restLocaton);
+            Vector4f locNormTemp = transform.transform(restNormalLocation);
+
+            locTemp.mul(weight);
+            locNormTemp.mul(weight);
+
+            currentLocation.add(locTemp);
+            currentNormalLocation.add(locNormTemp);
+
+        }
+    }
+
+    public void applyChange()
+    {
+        if (this.currentLocation == null) {
+            this.x = this.restLocaton.x;
+            this.y = this.restLocaton.y;
+            this.z = this.restLocaton.z;
+        } else {
+            this.x = this.currentLocation.x;
+            this.y = this.currentLocation.y;
+            this.z = this.currentLocation.z;
+        }
+
+        if (this.currentNormalLocation == null) {
+            this.xn = this.restNormalLocation.x;
+            this.yn = this.restNormalLocation.y;
+            this.zn = this.restNormalLocation.z;
+        } else {
+            this.xn = this.currentNormalLocation.x;
+            this.yn = this.currentNormalLocation.y;
+            this.zn = this.currentNormalLocation.z;
+        }
+
     }
 
 

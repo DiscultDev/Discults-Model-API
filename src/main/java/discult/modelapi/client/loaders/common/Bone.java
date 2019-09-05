@@ -1,6 +1,8 @@
 package discult.modelapi.client.loaders.common;
 
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +30,8 @@ public class Bone
     */
     private Bone parent;
 
+    public Vector3f translation, scale;
+    public Quaternionf rotation;
 
     /*
      * at the end this will also recalculate to ensure the rest transform is correct to world space and not bone space.
@@ -132,9 +136,12 @@ public class Bone
     }
 
 
-    public void precalcAnimation()
+    /**
+     * This method will precalc the animations and store the transforms.
+     */
+    public void precalcAnimation(Frame frame, Matrix4f animated)
     {
-        
+        this.skeleton.model.animator.animations.get(frame.owner.animationName).animationTransforms.put(frame.ID, animated);
     }
 
     /**
@@ -166,9 +173,34 @@ public class Bone
 
         real.mul(this.transformMatrix = this.parent != null ? this.parent.transformMatrix.mul(delta, this.initTransform()) : delta, absolute);
 
-        //TODO invert absolute to prevInverted if
+        //TODO invert absolute to prevInverted if needed
 
         this.children.forEach(Bone::setTransformMatrix);
+    }
+
+    public void applyTransform()
+    {
+        Frame currentFrame = this.skeleton.model.currentFrame();
+
+        if(currentFrame != null)
+        {
+            Matrix4f animated = currentFrame.owner.animationTransforms.get(currentFrame.ID);
+            Matrix4f animatedChange = new Matrix4f();
+            animated.mul(inverseRestMatrix, animatedChange);
+            this.transformMatrix = this.transformMatrix == null ? animatedChange : this.transformMatrix.mul(animatedChange, transformMatrix);
+        }
+
+        this.verts.entrySet().forEach(deformVertexFloatEntry -> {
+            deformVertexFloatEntry.getKey().applyTransform(this, deformVertexFloatEntry.getValue());
+        });
+
+        //Sets the current translation and rotation.
+        transformMatrix.transformPosition(translation);
+        transformMatrix.getNormalizedRotation(rotation);
+        transformMatrix.getScale(scale);
+
+        this.reset();
+
     }
 
 }

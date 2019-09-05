@@ -31,4 +31,9 @@ public class AnimatedModel
         this.skeleton = skeleton;
         this.animator = animator;
     }
+
+    public Frame currentFrame() {
+        return this.animator.currentAnimation == null ? null : (this.animator.currentAnimation.frames == null ? null : (this.animator.currentAnimation.frames.isEmpty() ? null : this.animator.currentAnimation.frames.get(this.animator.currentAnimation.currentFrame)));
+    }
+
 }
