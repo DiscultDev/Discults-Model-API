@@ -1,5 +1,7 @@
 package discult.modelapi.client.loaders.base;
 
+import org.lwjgl.util.vector.Matrix4f;
+
 /**
  * Bone/Joint class this represents a logical bone for the model
  * and will be used with models that can be manipulated.
@@ -7,6 +9,7 @@ package discult.modelapi.client.loaders.base;
  * vertices to calculate what their current position should be during 
  * a certain frame.
  */
-public class Bone {
-
+public class Bone 
+{
+	public Matrix4f transform;
 }

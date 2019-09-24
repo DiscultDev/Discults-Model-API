@@ -6,5 +6,12 @@ package discult.modelapi.client.loaders.base;
  */
 public class TextureCoords 
 {
+	public float u, v;
+
+	public TextureCoords(float u, float v) {
+		this.u = u;
+		this.v = v;
+	}
+	
 	
 }
