@@ -7,6 +7,10 @@ package discult.modelapi.client.loaders.base;
  * The model class will hold the skeleton of the model and hold an animator 
  * that will control the animations of the model.
  */
-public class Model {
+public class Model
+{
+
+    public Skeleton skeleton;
+    public Animator animator;
 
 }

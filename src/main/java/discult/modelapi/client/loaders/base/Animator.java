@@ -1,5 +1,7 @@
 package discult.modelapi.client.loaders.base;
 
+import java.util.HashMap;
+
 /**
  * The animator class will hold all the current animations and will be used
  * to decide what animation is needed for a specific task.
@@ -7,6 +9,8 @@ package discult.modelapi.client.loaders.base;
  * This also provides as a direct link for the animations to access information from the model
  * if needed.
  */
-public class Animator {
-
+public class Animator
+{
+    public Model owner;
+    public HashMap<String, Animation> animations = new HashMap<>();
 }

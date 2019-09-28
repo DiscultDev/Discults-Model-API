@@ -16,8 +16,9 @@ public class TransformVertex extends Vertex
 	public float xn,yn,zn;//the x,y,z normal positions of the vertex.
 	public final Vector4f restPosition;//rest location for the vertex(the position read from the model file).
 	public final Vector4f restNormalPosition;//rest Normal location for the vertex(the position read from the model file).
-	public Vector4f realPosition = new Vector4f();//its final position calculated from a matrix transform applied to a rest transform location.
-	public Vector4f realNormalPosition = new Vector4f();
+	public Vector4f realPosition = new Vector4f();//its final position calculated from a matrix transform applied to a rest position.
+	public Vector4f realNormalPosition = new Vector4f();//its final normal position calculated from a matrix transform applied to a rest position.
+
 
 	/**
 	 * Base constructor for the class this asks for the bare minimum that you need to initiate a vertex.
