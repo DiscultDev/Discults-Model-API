@@ -13,6 +13,9 @@ import java.util.List;
 public class Animation
 {
 
+    public String name;
     public List<Frame> frames = new ArrayList<>();
+
+    public int currentFrame;
 
 }

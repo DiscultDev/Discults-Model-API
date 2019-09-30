@@ -13,4 +13,14 @@ public class Animator
 {
     public Model owner;
     public HashMap<String, Animation> animations = new HashMap<>();
+    public Animation currentAnimation;
+
+    /**
+     *
+     * @return
+     */
+    public boolean hasAnimations()
+    {
+        return animations.size() > 0 ? true : false;
+    }
 }

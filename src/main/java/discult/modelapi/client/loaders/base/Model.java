@@ -1,5 +1,7 @@
 package discult.modelapi.client.loaders.base;
 
+import java.util.HashMap;
+
 /**
  * This is the model class it will hold all the information about the model
  * and will handle the calculations of the faces for the model.
@@ -12,5 +14,8 @@ public class Model
 
     public Skeleton skeleton;
     public Animator animator;
+    public HashMap<Socket, Float> sockets = new HashMap<>();
+
+
 
 }

@@ -11,6 +11,7 @@ import org.lwjgl.util.vector.Vector4f;
 public class Socket 
 {
 	public final String name;
+	public Bone attachedBone;
 	public float x,y,z;
     public final Vector4f restPosition;//rest location for the Socket
     public Vector4f realPosition = new Vector4f();//its final position calculated from a matrix transform applied to a rest position.
@@ -19,11 +20,12 @@ public class Socket
     /**
      * Base constructor for the class this asks for the bare minimum that you need to initiate a vertex.
      */
-    public Socket(String name, float x, float y, float z) {
+    public Socket(String name, float x, float y, float z, Bone attachedBone) {
         this.name = name;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.attachedBone = attachedBone;
 
         this.restPosition = new Vector4f(x,y,z,1);
     }

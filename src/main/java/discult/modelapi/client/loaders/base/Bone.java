@@ -24,10 +24,12 @@ public class Bone
 
 	public Matrix4f restTransform;
 	public Matrix4f restInverted;
+    public Matrix4f prevInverted = new Matrix4f();
 	public Matrix4f transform = new Matrix4f();
 	public List<Bone> children = new ArrayList<>();
 
     public HashMap<TransformVertex, Float> verts = new HashMap<>();
+    public HashMap<String, HashMap<Integer, Matrix4f>>  animatedTransforms = new HashMap();
 
     public Bone(String name, int ID, Bone parent, Skeleton owner)
     {
@@ -50,6 +52,18 @@ public class Bone
         }
     }
 
+
+    public void preloadAnimation(Frame key, Matrix4f animated) {
+        HashMap precalcArray;
+        if (this.animatedTransforms.containsKey(key.owner.name)) {
+            precalcArray = (HashMap)this.animatedTransforms.get(key.owner.name);
+        } else {
+            precalcArray = new HashMap();
+        }
+
+        precalcArray.put(key.ID, animated);
+        this.animatedTransforms.put(key.owner.name, precalcArray);
+    }
 
     public void reCalc(Matrix4f parentMatrix)
     {
@@ -74,6 +88,62 @@ public class Bone
     }
 
 
+    protected Matrix4f initTransform()
+    {
+        return this.transform == null ? (this.transform = new Matrix4f()) : this.transform;
+    }
+
+
+    public void calculateTransform()
+    {
+        Matrix4f realInverted;
+        Matrix4f real;
+        if(this.owner.owner.animator.hasAnimations() && this.owner.owner.animator.currentAnimation != null)
+        {
+            Frame currentFrame = this.owner.owner.animator.currentAnimation.frames.get(owner.owner.animator.currentAnimation.currentFrame);
+            realInverted = currentFrame.transforms.get(ID);
+            real = currentFrame.invertTransforms.get(ID);
+        }
+        else
+        {
+         realInverted = this.restTransform;
+         real = this.restInverted;
+        }
+
+        Matrix4f delta =  Matrix4f.mul(realInverted, real, null);
+        transform = this.parent != null ? Matrix4f.mul(parent.transform, delta, initTransform()) : delta;
+        Matrix4f absolute = Matrix4f.mul(real, transform, null);
+        prevInverted = Matrix4f.invert(absolute, null);
+        children.forEach(Bone::calculateTransform);
+    }
+
+    public void applyTransform()
+    {
+        Frame currentFrame = this.owner.owner.animator.currentAnimation.frames.get(owner.owner.animator.currentAnimation.currentFrame);
+
+        if(currentFrame != null)
+        {
+            HashMap<Integer, Matrix4f> precalcArray = animatedTransforms.get(currentFrame.owner.name);
+            Matrix4f animated = precalcArray.get(currentFrame.ID);
+            Matrix4f animatedChange = new Matrix4f();
+            Matrix4f.mul(animated, restInverted, animatedChange);
+            transform = this.transform == null ? animatedChange : Matrix4f.mul(this.transform, animatedChange, this.transform);
+        }
+
+        verts.entrySet().forEach(transformVertexFloatEntry -> {
+            transformVertexFloatEntry.getKey().calculateLocation(this, transformVertexFloatEntry.getValue());
+        });
+
+        owner.owner.sockets.entrySet().forEach(socketFloatEntry -> {
+            if(socketFloatEntry.getKey().attachedBone == this)
+            {
+                socketFloatEntry.getKey().calculateLocation(this, socketFloatEntry.getValue());
+            }
+        });
+        
+        this.resetTransform();
+
+    }
 
     /*
     This method will get a child from a string name
