@@ -1,7 +1,6 @@
 package discult.modelapi.main;
 
 import discult.modelapi.proxy.CommonProxy;
-import discult.modelapi.testing.EntityTest;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -30,7 +29,7 @@ public class DiscultModelAPI {
 
    @EventHandler
    public void init(FMLInitializationEvent event) {
-      EntityRegistry.registerModEntity(new ResourceLocation("dmapi", "test"), EntityTest.class, "test", 999, this, 64, 1, true);
+    //  EntityRegistry.registerModEntity(new ResourceLocation("dmapi", "test"), EntityTest.class, "test", 999, this, 64, 1, true);
    }
 
    @EventHandler
