@@ -38,6 +38,13 @@ public class ModelSMDBase extends ModelBase {
       this.modelScaleZ = modelScaleZ;
    }
 
+   public void setModelScaleXYZ(float scale)
+   {
+      this.modelScaleX = scale;
+      this.modelScaleY = scale;
+      this.modelScaleZ = scale;
+   }
+
    public boolean entityMoving(Entity entity) {
       this.mob = (EntitySMDBase)entity;
       return this.mob.limbSwingAmount > this.movementThreshold;
