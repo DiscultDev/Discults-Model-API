@@ -6,6 +6,7 @@ import discult.modelapi.common.entities.EntitySMDBase;
 import discult.modelapi.common.entities.animation.IncrementingVariable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 
 public class ModelSMDBase extends ModelBase {
@@ -16,9 +17,25 @@ public class ModelSMDBase extends ModelBase {
    public String path;
    public String name;
 
+   public static final float initRotFix = -90.0F;
+   public static final float offsetFixY = -1.5F;
+   private float modelScaleX = 1, modelScaleY = 1, modelScaleZ = 1;
+
    public ModelSMDBase(String path, String name) {
       this.path = path;
       this.name = name;
+   }
+
+   public void setModelScaleX(float modelScaleX) {
+      this.modelScaleX = modelScaleX;
+   }
+
+   public void setModelScaleY(float modelScaleY) {
+      this.modelScaleY = modelScaleY;
+   }
+
+   public void setModelScaleZ(float modelScaleZ) {
+      this.modelScaleZ = modelScaleZ;
    }
 
    public boolean entityMoving(Entity entity) {
@@ -26,7 +43,21 @@ public class ModelSMDBase extends ModelBase {
       return this.mob.limbSwingAmount > this.movementThreshold;
    }
 
+   @Override
    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+      super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+
+      setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+
+      GlStateManager.pushMatrix();
+
+      GlStateManager.rotate(initRotFix, 1.0F, 0.0F, 0.0F);
+      GlStateManager.translate(0.0F, offsetFixY, 0.0F);
+      GlStateManager.scale(modelScaleX, modelScaleY, modelScaleZ);
+
+      theModel.renderAll();
+
+      GlStateManager.popMatrix();
    }
 
    protected void setAnimationIncrement(float increment) {

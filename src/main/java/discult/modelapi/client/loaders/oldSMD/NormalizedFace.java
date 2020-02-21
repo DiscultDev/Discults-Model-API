@@ -3,8 +3,14 @@ package discult.modelapi.client.loaders.oldSMD;
 import discult.modelapi.client.loaders.general.Vertex;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.model.obj.OBJModel.TextureCoordinate;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 public class NormalizedFace {
@@ -32,77 +38,65 @@ public class NormalizedFace {
 
    }
 
-   public void addFaceForRender(boolean smoothShading) {
-      if (!smoothShading && this.faceNormal == null) {
-         this.faceNormal = this.calculateFaceNormal();
-      }
 
-      for(int i = 0; i < 3; ++i) {
-         GL11.glTexCoord2f(this.textureCoordinates[i].u, this.textureCoordinates[i].v);
-         if (!smoothShading) {
-            GL11.glNormal3f(this.faceNormal.x, this.faceNormal.y, this.faceNormal.z);
+   @SideOnly(Side.CLIENT)
+   public void render(BufferBuilder builder, boolean smoothShading)
+   {
+      if(faceNormal == null)
+         faceNormal = calculateFaceNormal();
+
+
+      builder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
+
+
+      for(int index = 0; index < vertices.length; ++index) {
+         //this means that it stores normal data so will need to check if it is to be smoothed or not.
+         if (vertices[index] instanceof DeformVertex && smoothShading) {
+            builder.pos(vertices[index].getX(), vertices[index].getY(), vertices[index].getZ())
+                    .tex(textureCoordinates[index].u, textureCoordinates[index].v)
+                    .normal(((DeformVertex) vertices[index]).getXn(), ((DeformVertex) vertices[index]).getYn(),
+                            ((DeformVertex) vertices[index]).getZn()).endVertex();
          } else {
-            GL11.glNormal3f(this.vertices[i].xn, this.vertices[i].yn, this.vertices[i].zn);
+            builder.pos(vertices[index].getX(), vertices[index].getY(), vertices[index].getZ())
+                    .tex(textureCoordinates[index].u, textureCoordinates[index].v)
+                    .normal(faceNormal.getX(), faceNormal.getY(),
+                            faceNormal.getZ()).endVertex();
          }
-
-         GL11.glVertex3d((double)this.vertices[i].x, (double)this.vertices[i].y, (double)this.vertices[i].z);
       }
 
+        /*
+        Minecraft Models work in quads so Buffer builder only supports quads, so to get around this if model has
+        triangle faces is to add the starting vert again at the end.
+         */
+      if(vertices.length == 3)
+      {
+         if(vertices[0] instanceof DeformVertex && smoothShading)
+         {
+            builder.pos(vertices[0].getX(), vertices[0].getY(), vertices[0].getZ())
+                    .tex(textureCoordinates[0].u, textureCoordinates[0].v)
+                    .normal(((DeformVertex)vertices[0]).getXn(), ((DeformVertex)vertices[0]).getYn(),
+                            ((DeformVertex)vertices[0]).getZn()).endVertex();
+         }
+         else
+         {
+            builder.pos(vertices[0].getX(), vertices[0].getY(), vertices[0].getZ())
+                    .tex(textureCoordinates[0].u, textureCoordinates[0].v)
+                    .normal(faceNormal.getX(), faceNormal.getY(),
+                            faceNormal.getZ()).endVertex();
+         }
+      }
+
+      Tessellator.getInstance().draw();//draw the model to screen.
    }
 
    public Vertex calculateFaceNormal() {
-      Vec3d v1 = new Vec3d((double)(this.vertices[1].x - this.vertices[0].x), (double)(this.vertices[1].y - this.vertices[0].y), (double)(this.vertices[1].z - this.vertices[0].z));
-      Vec3d v2 = new Vec3d((double)(this.vertices[2].x - this.vertices[0].x), (double)(this.vertices[2].y - this.vertices[0].y), (double)(this.vertices[2].z - this.vertices[0].z));
+      Vec3d v1 = new Vec3d(vertices[1].getX() - vertices[0].getX(), vertices[1].getY() - vertices[0].getY(), vertices[1].getZ() - vertices[0].getZ());
+      Vec3d v2 = new Vec3d(vertices[2].getX() - vertices[0].getX(), vertices[2].getY() - vertices[0].getY(), vertices[2].getZ() - vertices[0].getZ());
       Vec3d normalVector = null;
+
       normalVector = v1.crossProduct(v2).normalize();
-      return new Vertex((float)normalVector.x, (float)normalVector.y, (float)normalVector.z);
+
+      return new Vertex((float) normalVector.x, (float) normalVector.y, (float) normalVector.z);
    }
 
-   public void addFaceForRender(FloatBuffer vertexBuffer, FloatBuffer textureBuffer, FloatBuffer normalBuffer, boolean smoothShading) {
-      if (!smoothShading && this.faceNormal == null) {
-         this.faceNormal = this.calculateFaceNormal();
-      }
-
-      for(int i = 0; i < 3; ++i) {
-         textureBuffer.put(this.textureCoordinates[i].u);
-         textureBuffer.put(this.textureCoordinates[i].v);
-         if (!smoothShading) {
-            normalBuffer.put(this.faceNormal.x);
-            normalBuffer.put(this.faceNormal.y);
-            normalBuffer.put(this.faceNormal.z);
-         } else {
-            normalBuffer.put(this.vertices[i].xn);
-            normalBuffer.put(this.vertices[i].yn);
-            normalBuffer.put(this.vertices[i].zn);
-         }
-
-         vertexBuffer.put(this.vertices[i].x);
-         vertexBuffer.put(this.vertices[i].y);
-         vertexBuffer.put(this.vertices[i].z);
-      }
-
-   }
-
-   public void addFaceForRender(FloatBuffer vertexBuffer, FloatBuffer normalBuffer, boolean smoothShading) {
-      if (!smoothShading && this.faceNormal == null) {
-         this.faceNormal = this.calculateFaceNormal();
-      }
-
-      for(int i = 0; i < 3; ++i) {
-         if (!smoothShading) {
-            normalBuffer.put(this.faceNormal.x);
-            normalBuffer.put(this.faceNormal.y);
-            normalBuffer.put(this.faceNormal.z);
-         } else {
-            normalBuffer.put(this.vertices[i].xn);
-            normalBuffer.put(this.vertices[i].yn);
-            normalBuffer.put(this.vertices[i].zn);
-         }
-
-         vertexBuffer.put(this.vertices[i].x);
-         vertexBuffer.put(this.vertices[i].y);
-         vertexBuffer.put(this.vertices[i].z);
-      }
-
-   }
 }

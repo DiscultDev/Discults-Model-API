@@ -31,8 +31,11 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
       super(Minecraft.getMinecraft().getRenderManager(), (ModelBase)null, shadowsizeIn);
    }
 
-   LayerHeldItemTest test = new LayerHeldItemTest();
 
+
+
+
+   /*
    public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
       GlStateManager.pushMatrix();
       GlStateManager.disableCull();
@@ -157,5 +160,7 @@ public abstract class RenderSMDBase<T extends EntityLiving> extends RenderLiving
        GL11.glVertex3d(cx,cy,cz);
        GL11.glEnd();
    }
+
+    */
 
 }

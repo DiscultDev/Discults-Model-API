@@ -11,4 +11,10 @@ public class RenderTest extends RenderSMDBase<EntityTest> {
    protected ResourceLocation getEntityTexture(EntityTest entity) {
       return new ResourceLocation("minecraft", "textures/blocks/cobblestone.png");
    }
+
+   @Override
+   public void doRender(EntityTest entity, double x, double y, double z, float entityYaw, float partialTicks) {
+      this.mainModel = entity.getModel();
+      super.doRender(entity, x, y, z, entityYaw, partialTicks);
+   }
 }

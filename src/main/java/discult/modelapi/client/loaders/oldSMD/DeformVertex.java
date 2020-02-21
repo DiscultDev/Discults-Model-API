@@ -38,6 +38,19 @@ public class DeformVertex extends Vertex {
       this.ID = ID;
    }
 
+
+   public float getXn() {
+      return xn;
+   }
+
+   public float getYn() {
+      return yn;
+   }
+
+   public float getZn() {
+      return zn;
+   }
+
    public void reset() {
       this.currentLocMod = null;
       this.currentNormalMod = null;

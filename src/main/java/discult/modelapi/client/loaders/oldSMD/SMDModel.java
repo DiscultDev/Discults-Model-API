@@ -12,9 +12,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.obj.OBJModel.TextureCoordinate;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBBufferObject;
 import org.lwjgl.opengl.GL11;
@@ -319,6 +322,17 @@ public class SMDModel {
       this.verts.forEach(DeformVertex::reset);
    }
 
+
+   @SideOnly(Side.CLIENT)
+   public void render(BufferBuilder builder, boolean smooth)
+   {
+      if(faces.size() > 0)
+      {
+         faces.forEach(face -> face.render(builder, smooth));
+      }
+   }
+
+   /*
    public void render(boolean hasChanged) {
       if (this.owner.overrideSmoothShading) {
          isSmoothModel = false;
@@ -404,4 +418,6 @@ public class SMDModel {
       OpenGlHelper.glBindBuffer(OpenGlHelper.GL_ARRAY_BUFFER, this.normalsVbo);
       ARBBufferObject.glBufferDataARB(OpenGlHelper.GL_ARRAY_BUFFER, this.normalBuffer, 35044);
    }
+
+    */
 }

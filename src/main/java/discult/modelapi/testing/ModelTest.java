@@ -9,7 +9,14 @@ import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ModelTest extends ModelSMDBase {
+public class ModelTest extends ModelSMDBase
+{
+   public ModelTest()
+   {
+      super("test", "test");
+      this.theModel = RenderLocation.setMobModel(path, name);
+   }
+   /*
    SMDModelRenderer body = new SMDModelRenderer(this, "body");
 
    public ModelTest() {
@@ -39,4 +46,5 @@ public class ModelTest extends ModelSMDBase {
       }
 
    }
+    */
 }

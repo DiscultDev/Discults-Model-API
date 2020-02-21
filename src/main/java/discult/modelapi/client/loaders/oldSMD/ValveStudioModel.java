@@ -12,11 +12,14 @@ import java.util.function.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.common.model.IModelState;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ValveStudioModel implements IModel, IDiscultModel {
    public SMDModel body;
@@ -132,19 +135,11 @@ public class ValveStudioModel implements IModel, IDiscultModel {
 
    }
 
+   @SideOnly(Side.CLIENT)
+   @Override
    public void renderAll() {
-      GlStateManager.shadeModel(7425);
-
-      try {
-         this.body.render(this.hasChanged);
-      } catch (Exception var2) {
-         var2.printStackTrace();
-         if (OpenGlHelper.useVbo()) {
-            OpenGlHelper.glBindBuffer(OpenGlHelper.GL_ARRAY_BUFFER, 0);
-         }
-      }
-
-      GlStateManager.shadeModel(7424);
+      Tessellator tess = Tessellator.getInstance();
+      body.render(tess.getBuffer(), overrideSmoothShading);
    }
 
    void sendBoneData(SMDModel model) {
