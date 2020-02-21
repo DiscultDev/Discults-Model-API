@@ -15,7 +15,7 @@ public class ModelTest extends ModelSMDBase
    {
       super("test", "test");
       this.theModel = RenderLocation.setMobModel(path, name);
-      this.setModelScaleXYZ(0.1f);
+      this.setModelScaleXYZ(0.05f);
    }
    /*
    SMDModelRenderer body = new SMDModelRenderer(this, "body");
